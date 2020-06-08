@@ -1010,6 +1010,8 @@ class DeserializerZcoin(Deserializer):
             )
 
         return tx_input
+    def read_varint(self):
+        return self._read_varint()
 
 
 class DeserializerXaya(DeserializerSegWit, DeserializerAuxPow):

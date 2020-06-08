@@ -3623,11 +3623,6 @@ class IndexChain(Coin):
     PEERS = [
         '202.182.101.157'
     ]
-    @classmethod
-    def is_pos(cls, header):
-        from electrumx.lib.util import unpack_le_uint32_from
-        nNonce = util.unpack_le_uint32_from(header, 80)[0]  # uint64_t
-        return nNonce == 0
 
     @classmethod
     def block_header(cls, block, height):
@@ -3637,12 +3632,12 @@ class IndexChain(Coin):
         return block[:deserializer.cursor + sig_length]
 
     @classmethod
+    def static_header_len(cls, height):
+        '''Given a header height return its length.'''
+        return cls.BASIC_HEADER_SIZE
+
+    @classmethod
     def header_hash(cls, header):
-        sz = cls.BASIC_HEADER_SIZE
-        deserializer = cls.DESERIALIZER(header, start=cls.BASIC_HEADER_SIZE)
-        sig_length = deserializer.read_varint()
-        if cls.is_pos(header):
-            sz += sig_length
         import x16rv2_hash
         return x16rv2_hash.getPoWHash(header)
 
