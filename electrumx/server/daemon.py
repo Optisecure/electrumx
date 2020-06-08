@@ -518,3 +518,17 @@ class ZcoinMtpDaemon(Daemon):
     async def protx(self, params):
         '''Set of commands to execute ProTx related actions.'''
         return await self._send_single('protx', params)
+
+class IndexChainDaemon(Daemon):
+
+    async def masternode_broadcast(self, params):
+        '''Broadcast a transaction to the network.'''
+        return await self._send_single('indexnodebroadcast', params)
+
+    async def masternode_list(self, params):
+        '''Return the masternode status.'''
+        return await self._send_single('indexnodelist', params)
+
+    # async def protx(self, params):
+    #     '''Set of commands to execute ProTx related actions.'''
+    #     return await self._send_single('protx', params)

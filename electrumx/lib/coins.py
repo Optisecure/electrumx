@@ -3601,6 +3601,50 @@ class Smileycoin(Coin):
     RPC_PORT = 9388
     REORG_LIMIT = 5000
 
+class IndexChain(Coin):
+    NAME = "IndexChain"
+    SHORTNAME = "IDX"
+    NET = "mainnet"
+    P2PKH_VERBYTE = bytes.fromhex("66")
+    P2SH_VERBYTES = [bytes.fromhex("07")]
+    WIF_BYTE = bytes.fromhex("d2")
+    GENESIS_HASH = '000000263aa7c2332ccdaa9f5ae5b9008c685c6c263020d2529432ed5bd77b32'
+    TX_COUNT = 148510
+    TX_COUNT_HEIGHT = 90041
+    TX_PER_BLOCK = 4000  # 2000 for 1MB block
+    IRC_PREFIX = None
+    RPC_PORT = 8888
+    REORG_LIMIT = 5000
+    PEER_DEFAULT_PORTS = {'t': '50001', 's': '50002'}
+    STATIC_BLOCK_HEADERS = False
+    SESSIONCLS = DashElectrumX
+    DAEMON = daemon.IndexChainDaemon
+    DESERIALIZER = lib_tx.DeserializerZcoin
+    PEERS = [
+        '202.182.101.157'
+    ]
+    @classmethod
+    def is_pos(cls, header):
+        from electrumx.lib.util import unpack_le_uint32_from
+        nNonce = util.unpack_le_uint32_from(header, 80)[0]  # uint64_t
+        return nNonce == 0
+
+    @classmethod
+    def block_header(cls, block, height):
+        '''Returns the block header given a block and its height.'''
+        deserializer = cls.DESERIALIZER(block, start=cls.BASIC_HEADER_SIZE)
+        sig_length = deserializer.read_varint()
+        return block[:deserializer.cursor + sig_length]
+
+    @classmethod
+    def header_hash(cls, header):
+        sz = cls.BASIC_HEADER_SIZE
+        deserializer = cls.DESERIALIZER(header, start=cls.BASIC_HEADER_SIZE)
+        sig_length = deserializer.read_varint()
+        if cls.is_pos(header):
+            sz += sig_length
+        import x16rv2_hash
+        return x16rv2_hash.getPoWHash(header)
 
 class Iop(Coin):
     NAME = "Iop"
