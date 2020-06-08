@@ -3625,13 +3625,6 @@ class IndexChain(Coin):
     ]
 
     @classmethod
-    def block_header(cls, block, height):
-        '''Returns the block header given a block and its height.'''
-        deserializer = cls.DESERIALIZER(block, start=cls.BASIC_HEADER_SIZE)
-        sig_length = deserializer.read_varint()
-        return block[:deserializer.cursor + sig_length]
-
-    @classmethod
     def static_header_len(cls, height):
         '''Given a header height return its length.'''
         return cls.BASIC_HEADER_SIZE
